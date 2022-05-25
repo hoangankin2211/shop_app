@@ -1,39 +1,45 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../screens/product_detail_screen.dart';
+import 'package:provider/provider.dart';
 
 class ProductItem extends StatelessWidget {
-  const ProductItem(
-      {Key? key, required this.id, required this.imageUrl, required this.title})
-      : super(key: key);
-  final String id;
-  final String imageUrl;
-  final String title;
+  const ProductItem({Key? key}) : super(key: key);
+
+  // const ProductItem(
+  //     {Key? key, required this.id, required this.imageUrl, required this.title})
+  //     : super(key: key);
+  // final String id;
+  // final String imageUrl;
+  // final String title;
   @override
   Widget build(BuildContext context) {
+    final product = Provider.of<Product>(context, listen: false);
     return GestureDetector(
       onTap: () {
         Navigator.of(context)
-            .pushNamed(ProductDetailScreen.routeName, arguments: id);
+            .pushNamed(ProductDetailScreen.routeName, arguments: product.id);
       },
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         child: GridTile(
           child: Image.network(
-            imageUrl,
+            product.imageUrl,
             fit: BoxFit.cover,
           ),
           footer: GridTileBar(
-            leading: IconButton(
-              icon: const Icon(
-                Icons.favorite,
-                size: 20,
+            leading: Consumer<Product>(
+              builder: (context, product, _) => IconButton(
+                icon: Icon(
+                  product.isFavorite ? Icons.favorite : Icons.favorite_outline,
+                  size: 20,
+                ),
+                onPressed: product.toggleFavoriteButton,
               ),
-              onPressed: () {},
             ),
             backgroundColor: Colors.black45,
             title: Text(
-              title,
+              product.title,
               style: const TextStyle(color: Colors.white),
               textAlign: TextAlign.center,
             ),
