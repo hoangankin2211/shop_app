@@ -21,13 +21,14 @@ class Cart with ChangeNotifier {
   void addItem(String cartId, double price, String title) {
     if (_item.containsKey(cartId)) {
       _item.update(
-          cartId,
-          (value) => CartItem(
-                id: value.id,
-                price: value.price,
-                quantity: value.quantity + 1,
-                title: value.title,
-              ));
+        cartId,
+        (value) => CartItem(
+          id: value.id,
+          price: value.price,
+          quantity: value.quantity + 1,
+          title: value.title,
+        ),
+      );
     } else {
       _item.putIfAbsent(
         cartId,
@@ -42,6 +43,29 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
+  void removeOneItem(String cartId) {
+    if (_item[cartId]!.quantity > 1) {
+      _item.update(
+        cartId,
+        (value) => CartItem(
+          id: value.id,
+          price: value.price,
+          quantity: value.quantity - 1,
+          title: value.title,
+        ),
+      );
+    } else {
+      _item.removeWhere((key, value) => key == cartId);
+    }
+
+    notifyListeners();
+  }
+
+  void removeAllItem(String cartId) {
+    _item.removeWhere((key, value) => key == cartId);
+    notifyListeners();
+  }
+
   int get itemCount {
     return _item.length;
   }
@@ -51,6 +75,6 @@ class Cart with ChangeNotifier {
     _item.forEach((key, value) {
       total += value.price * value.quantity;
     });
-    return total;
+    return ((total * 100).round()) / 100;
   }
 }
