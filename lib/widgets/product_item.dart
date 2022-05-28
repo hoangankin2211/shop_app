@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
+import '../providers/cart_provider.dart';
 
 class ProductItem extends StatelessWidget {
   const ProductItem({Key? key}) : super(key: key);
@@ -15,6 +16,8 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
+    final cart = Provider.of<Cart>(context, listen: false);
+
     return GestureDetector(
       onTap: () {
         Navigator.of(context)
@@ -48,7 +51,8 @@ class ProductItem extends StatelessWidget {
                 Icons.shopping_cart,
                 size: 20,
               ),
-              onPressed: () {},
+              onPressed: () =>
+                  cart.addItem(product.id, product.price, product.title),
             ),
           ),
         ),
