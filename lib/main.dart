@@ -20,7 +20,7 @@ final lightTheme = ThemeData(
 final darkTheme = ThemeData(
   primaryColor: Colors.white,
   backgroundColor: Colors.grey,
-);
+);  
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

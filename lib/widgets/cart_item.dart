@@ -18,65 +18,75 @@ class CartItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<Cart>(context, listen: false);
+    final cart = Provider.of<Cart>(context);
     print('buildItem');
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Card(
-          elevation: 5,
-          child: ListTile(
-            leading: SizedBox(
-              height: 70,
-              width: 50,
-              child: CircleAvatar(
-                child: Text('\$' + price.toString()),
-                backgroundColor: Theme.of(context).primaryColor,
+    return Dismissible(
+      key: ValueKey(id),
+      background: Container(
+        margin: const EdgeInsets.all(7),
+        alignment: Alignment.centerRight,
+        child: const Icon(
+          Icons.delete,
+          size: 45,
+          color: Colors.white,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(5)),
+          color: Theme.of(context).errorColor,
+        ),
+      ),
+      direction: DismissDirection.endToStart,
+      onDismissed: (dismiss) => cart.removeAllItem(id),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Card(
+            margin: const EdgeInsets.all(7),
+            elevation: 5,
+            child: ListTile(
+              leading: SizedBox(
+                height: 70,
+                width: 50,
+                child: CircleAvatar(
+                  child: Text('\$' + price.toString()),
+                  backgroundColor: Theme.of(context).primaryColor,
+                ),
               ),
-            ),
-            title: Text(title),
-            subtitle: Text('Total: ' +
-                ((quantity * price * 100).round() / 100).toString() +
-                ' \$'),
-            trailing: SizedBox(
-              width: constraints.maxWidth * 0.3,
-              child: Column(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: IconButton(
-                            onPressed: () => cart.addItem(id, price, title),
-                            icon: const Icon(Icons.add, size: 20),
-                          ),
+              title: Text(title),
+              subtitle: Text('Total: ' +
+                  ((quantity * price * 100).round() / 100).toString() +
+                  ' \$'),
+              trailing: SizedBox(
+                width: constraints.maxWidth * 0.3,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: Align(
+                        child: IconButton(
+                          onPressed: () => cart.addItem(id, price, title),
+                          icon: const Icon(Icons.add, size: 20),
                         ),
-                        Expanded(
-                            child: Align(
-                                alignment: Alignment.center,
-                                child: Text(quantity.toString() + 'x'))),
-                        Expanded(
-                          child: IconButton(
-                            onPressed: () => cart.removeOneItem(id),
-                            icon: const Icon(Icons.remove, size: 20),
-                          ),
-                        )
-                      ],
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () => cart.removeAllItem(id),
-                      child: const Text('Delete'),
-                    ),
-                  )
-                ],
+                    Expanded(
+                        child: Align(
+                            alignment: Alignment.center,
+                            child: Text(quantity.toString() + 'x'))),
+                    Expanded(
+                      child: Align(
+                        child: IconButton(
+                          onPressed: () => cart.removeOneItem(id),
+                          icon: const Icon(Icons.remove, size: 20),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
