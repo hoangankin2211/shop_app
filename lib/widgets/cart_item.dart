@@ -19,7 +19,6 @@ class CartItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
-    print('buildItem');
     return Dismissible(
       key: ValueKey(id),
       background: Container(

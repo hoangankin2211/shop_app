@@ -64,8 +64,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
             child: TabBarView(
               children: [
                 DetailScreen(product: productData),
-                ReviewsScreen(),
-                RelatedScreen()
+                const ReviewsScreen(),
+                const RelatedScreen()
               ],
               controller: tabController,
             ),

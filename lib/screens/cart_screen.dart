@@ -8,7 +8,6 @@ class CartScreen extends StatelessWidget {
   const CartScreen({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    print('build screen');
     final cartData = Provider.of<Cart>(context).item;
     return Scaffold(
       appBar: AppBar(
