@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+
 import 'package:shop_app/screens/cart_screen.dart';
 import 'package:shop_app/screens/product_detail_screen.dart';
 import './screens/product_overview_screen.dart';
-import './providers/product_provider.dart';
+import './screens/cart_screen.dart';
+import './screens/orders_screen.dart';
+
 import 'package:provider/provider.dart';
 import './providers/cart_provider.dart';
-import './screens/cart_screen.dart';
+import './providers/product_provider.dart';
+import './providers/order_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +24,7 @@ final lightTheme = ThemeData(
 final darkTheme = ThemeData(
   primaryColor: Colors.white,
   backgroundColor: Colors.grey,
-);  
+);
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -35,6 +39,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => Cart(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => Order(),
+        )
       ],
       child: MaterialApp(
         theme: lightTheme,
@@ -44,6 +51,9 @@ class MyApp extends StatelessWidget {
           ProductDetailScreen.routeName: (context) =>
               const ProductDetailScreen(),
           CartScreen.routeName: (context) => const CartScreen(),
+          ProductOverviewScreen.routeName: (context) =>
+              const ProductOverviewScreen(),
+          OrderScreen.routeName: (context) => const OrderScreen(),
         },
       ),
     );

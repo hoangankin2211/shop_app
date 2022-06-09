@@ -5,11 +5,13 @@ import 'add_product_screen.dart';
 import '../widgets/badge.dart';
 import '../providers/cart_provider.dart';
 import 'cart_screen.dart';
+import 'app_drawer.dart';
 
 enum FilterFavorite { all, favorite }
 
 class ProductOverviewScreen extends StatefulWidget {
   const ProductOverviewScreen({Key? key}) : super(key: key);
+  static const String routeName = '/product_overview_screen';
 
   @override
   State<ProductOverviewScreen> createState() => _ProductOverviewScreenState();
@@ -60,7 +62,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
             builder: (context, cart, _) => Badge(
                 child: IconButton(
                   onPressed: () =>
-                      Navigator.pushNamed(context, CartScreen.routeName),
+                      Navigator.of(context).pushNamed(CartScreen.routeName),
                   icon: const Icon(Icons.shopping_cart),
                 ),
                 value: cart.itemCount.toString(),
@@ -69,6 +71,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
         ],
       ),
       body: ProductsGrid(showFavorite: _showFavorite),
+      drawer: const DrawerScreen(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showAddProductDialog(context),
         child: const Icon(Icons.add),

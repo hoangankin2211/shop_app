@@ -77,4 +77,9 @@ class Cart with ChangeNotifier {
     });
     return ((total * 100).round()) / 100;
   }
+
+  void clear() {
+    _item.clear();
+    notifyListeners();
+  }
 }

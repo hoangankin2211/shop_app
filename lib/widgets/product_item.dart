@@ -31,7 +31,33 @@ class ProductItem extends StatelessWidget {
                   product.isFavorite ? Icons.favorite : Icons.favorite_outline,
                   size: 20,
                 ),
-                onPressed: product.toggleFavoriteButton,
+                onPressed: () {
+                  product.toggleFavoriteButton();
+
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+                  String content = '';
+                  if (product.isFavorite) {
+                    content = 'Added to the favorite list';
+                  } else {
+                    content = 'Deleted from the favorite list';
+                  }
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        content,
+                        textAlign: TextAlign.start,
+                      ),
+                      duration: const Duration(seconds: 2),
+                      action: SnackBarAction(
+                        label: 'UNDO',
+                        onPressed: product.toggleFavoriteButton,
+                        textColor: Colors.redAccent,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
             backgroundColor: Colors.black45,
@@ -45,8 +71,25 @@ class ProductItem extends StatelessWidget {
                 Icons.shopping_cart,
                 size: 20,
               ),
-              onPressed: () =>
-                  cart.addItem(product.id, product.price, product.title),
+              onPressed: () {
+                cart.addItem(product.id, product.price, product.title);
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text(
+                      'Add product to cart successful',
+                      textAlign: TextAlign.start,
+                    ),
+                    duration: const Duration(seconds: 2),
+                    action: SnackBarAction(
+                      label: 'UNDO',
+                      onPressed: () => cart.removeOneItem(product.id),
+                      textColor: Colors.redAccent,
+                    ),
+                    backgroundColor: Colors.black54,
+                  ),
+                );
+              },
             ),
           ),
         ),

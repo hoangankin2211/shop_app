@@ -7,7 +7,6 @@ class CartItem extends StatelessWidget {
   final String title;
   final double price;
   final int quantity;
-
   const CartItem({
     Key? key,
     required this.id,
@@ -15,7 +14,6 @@ class CartItem extends StatelessWidget {
     required this.quantity,
     required this.title,
   }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
@@ -36,6 +34,38 @@ class CartItem extends StatelessWidget {
       ),
       direction: DismissDirection.endToStart,
       onDismissed: (dismiss) => cart.removeAllItem(id),
+      confirmDismiss: (direction) {
+        bool isDelete = false;
+        return showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              alignment: Alignment.center,
+              title: const Text('Are you sure ?'),
+              content:
+                  const Text('Do you want to remove the item from the cart ? '),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    isDelete = true;
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('YES'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    isDelete = false;
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('NO'),
+                ),
+              ],
+            );
+          },
+        ).then((value) {
+          return isDelete;
+        });
+      },
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Card(

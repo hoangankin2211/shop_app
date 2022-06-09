@@ -24,6 +24,7 @@ class Order with ChangeNotifier {
   }
 
   void addOrder(List<CartItem> cartProduct, double total) {
+    if (cartProduct.isEmpty) return;
     _orders.insert(
       0,
       OrderItem(
