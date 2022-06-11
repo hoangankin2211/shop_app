@@ -18,14 +18,6 @@ class ProductOverviewScreen extends StatefulWidget {
 }
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
-  void showAddProductDialog(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (_) {
-          return const AddProductScreen();
-        });
-  }
-
   bool _showFavorite = false;
 
   @override
@@ -72,10 +64,6 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
       ),
       body: ProductsGrid(showFavorite: _showFavorite),
       drawer: const DrawerScreen(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => showAddProductDialog(context),
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }
