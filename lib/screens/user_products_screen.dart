@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import './app_drawer.dart';
 import '../providers/product_provider.dart';
 import '../widgets/user_products_item.dart';
-import './add_product_screen.dart';
+import 'edit_product_screen.dart';
 
 class UserProductsScreen extends StatefulWidget {
   static const String routeName = './user_products_screen';
@@ -18,10 +18,11 @@ class UserProductsScreen extends StatefulWidget {
 class _UserProductsScreenState extends State<UserProductsScreen> {
   void showAddProductDialog(BuildContext context) {
     showDialog(
-        context: context,
-        builder: (_) {
-          return const AddProductScreen();
-        });
+      context: context,
+      builder: (_) {
+        return const EditProductScreen(id: null);
+      },
+    );
   }
 
   @override
@@ -40,18 +41,31 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
       drawer: const DrawerScreen(),
       body: Container(
         padding: const EdgeInsets.all(8),
-        child: ListView.builder(
-          itemBuilder: (context, index) => Column(
-            children: [
-              UserProductsItem(
-                imageUrl: productData.item[index].imageUrl,
-                title: productData.item[index].title,
+        child: productData.item.isEmpty
+            ? const Center(
+                child: Text(
+                  'There is no product yet',
+                  style: TextStyle(
+                    fontFamily: 'Raleway-Bold',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+            : ListView.builder(
+                itemBuilder: (context, index) => Column(
+                  children: [
+                    UserProductsItem(
+                      id: productData.item[index].id,
+                      imageUrl: productData.item[index].imageUrl,
+                      title: productData.item[index].title,
+                      removeItem: productData.deleteProduct,
+                    ),
+                    const Divider(),
+                  ],
+                ),
+                itemCount: productData.item.length,
               ),
-              const Divider(),
-            ],
-          ),
-          itemCount: productData.item.length,
-        ),
       ),
     );
   }

@@ -49,7 +49,18 @@ class ProductProvider with ChangeNotifier {
   }
 
   void addProduct(Product value) {
-    _item.add(value);
+    int index = _item.indexWhere((element) => element.id == value.id);
+    if (index != -1) {
+      _item.removeAt(index);
+      _item.insert(index, value);
+    } else {
+      _item.add(value);
+    }
+    notifyListeners();
+  }
+
+  void deleteProduct(String id) {
+    _item.removeWhere((element) => element.id == id);
     notifyListeners();
   }
 }

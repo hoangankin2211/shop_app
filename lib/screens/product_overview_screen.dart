@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/ProductsGrid.dart';
-import 'add_product_screen.dart';
+import 'edit_product_screen.dart';
 import '../widgets/badge.dart';
 import '../providers/cart_provider.dart';
 import 'cart_screen.dart';

@@ -98,9 +98,11 @@ class CartItem extends StatelessWidget {
                       ),
                     ),
                     Expanded(
-                        child: Align(
-                            alignment: Alignment.center,
-                            child: Text(quantity.toString() + 'x'))),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(quantity.toString() + 'x'),
+                      ),
+                    ),
                     Expanded(
                       child: Align(
                         child: IconButton(

@@ -45,6 +45,7 @@ class MyApp extends StatelessWidget {
         )
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: lightTheme,
         title: 'My Shop',
         home: const MyHomePage(),
