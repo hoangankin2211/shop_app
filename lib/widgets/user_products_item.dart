@@ -63,9 +63,10 @@ class UserProductsItem extends StatelessWidget {
               icon: const Icon(Icons.edit),
             ),
             IconButton(
-                onPressed: () => _deleteItem(context),
-                icon: const Icon(Icons.delete),
-                color: Colors.red)
+              onPressed: () => _deleteItem(context),
+              icon: const Icon(Icons.delete),
+              color: Colors.red,
+            )
           ],
         ),
       ),

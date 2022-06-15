@@ -1,5 +1,9 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import '../models/product.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class ProductProvider with ChangeNotifier {
   final List<Product> _item = [
@@ -48,15 +52,43 @@ class ProductProvider with ChangeNotifier {
     return _item.firstWhere((element) => element.id == id);
   }
 
-  void addProduct(Product value) {
-    int index = _item.indexWhere((element) => element.id == value.id);
-    if (index != -1) {
-      _item.removeAt(index);
-      _item.insert(index, value);
-    } else {
-      _item.add(value);
+  Future<void> addProduct(Product value) async {
+    const String url =
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/poduct';
+    try {
+      final response = await http.post(Uri.parse(url),
+          body: json.encode({'title': value.title}));
+
+      int index = _item.indexWhere((element) => element.id == value.id);
+      if (index != -1) {
+        _item.removeAt(index);
+        _item.insert(
+          index,
+          Product(
+            id: json.decode(response.body).toString(),
+            description: value.description,
+            imageUrl: value.imageUrl,
+            price: value.price,
+            title: value.title,
+            isFavorite: value.isFavorite,
+          ),
+        );
+      } else {
+        _item.add(
+          Product(
+            id: json.decode(response.body).toString(),
+            description: value.description,
+            imageUrl: value.imageUrl,
+            price: value.price,
+            title: value.title,
+            isFavorite: value.isFavorite,
+          ),
+        );
+      }
+      notifyListeners();
+    } catch (error) {
+      rethrow;
     }
-    notifyListeners();
   }
 
   void deleteProduct(String id) {

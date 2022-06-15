@@ -28,6 +28,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
     imageUrl: '',
   );
 
+  var _isLoading = false;
+
   void _showAlert(BuildContext context) {
     final isValid = _form.currentState?.validate();
 
@@ -60,10 +62,37 @@ class _EditProductScreenState extends State<EditProductScreen> {
     });
   }
 
-  void _addProduct() {
-    Provider.of<ProductProvider>(context, listen: false)
-        .addProduct(_editedProduct);
-    Navigator.of(context).pop();
+  Future<void> _addProduct() async {
+    bool isSuccessful = true;
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      await Provider.of<ProductProvider>(context, listen: false)
+          .addProduct(_editedProduct);
+    } catch (error) {
+      isSuccessful = await showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+              actions: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () => Navigator.of(context).pop(false),
+                )
+              ],
+              title: const Text('An error occurred'),
+              content: Text(error.toString()),
+            );
+          });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+      if (isSuccessful) {
+        Navigator.of(context).pop();
+      }
+    }
   }
 
   @override
@@ -160,7 +189,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   isFavorite: _editedProduct.isFavorite,
                 ),
                 validator: (value) {
-                  if (value!.isEmpty) return 'This field can\'n can be empty ';
+                  if (value!.isEmpty) {
+                    return 'This field can\'n can be empty ';
+                  }
                   if (double.tryParse(value) == null) {
                     return 'Please enter a valid number';
                   }
@@ -240,17 +271,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   ),
                 ],
               ),
-              TextButton(
-                onPressed: () => _showAlert(context),
-                child: const Text(
-                  'Save',
-                  style: TextStyle(
-                      color: Colors.teal,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Raleway'),
-                ),
-              ),
+              _isLoading
+                  ? const CircularProgressIndicator()
+                  : TextButton(
+                      onPressed: () => _showAlert(context),
+                      child: const Text(
+                        'Save',
+                        style: TextStyle(
+                            color: Colors.teal,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Raleway'),
+                      ),
+                    ),
             ],
           ),
         ),
