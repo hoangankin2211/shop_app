@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
+import '../providers/product_provider.dart';
 
 class Product with ChangeNotifier {
   final String id;
@@ -15,8 +18,10 @@ class Product with ChangeNotifier {
       required this.imageUrl,
       this.isFavorite = false});
 
-  void toggleFavoriteButton() {
+  void toggleFavoriteButton(BuildContext context) {
     isFavorite = !isFavorite;
+    Provider.of<ProductProvider>(context, listen: false)
+        .updateProduct(id, this);
     notifyListeners();
   }
 }

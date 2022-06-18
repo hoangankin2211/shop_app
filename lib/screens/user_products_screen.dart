@@ -39,33 +39,38 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
         ],
       ),
       drawer: const DrawerScreen(),
-      body: Container(
-        padding: const EdgeInsets.all(8),
-        child: productData.item.isEmpty
-            ? const Center(
-                child: Text(
-                  'There is no product yet',
-                  style: TextStyle(
-                    fontFamily: 'Raleway-Bold',
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              )
-            : ListView.builder(
-                itemBuilder: (context, index) => Column(
-                  children: [
-                    UserProductsItem(
-                      id: productData.item[index].id,
-                      imageUrl: productData.item[index].imageUrl,
-                      title: productData.item[index].title,
-                      removeItem: productData.deleteProduct,
+      body: RefreshIndicator(
+        onRefresh: () {
+          return Provider.of<ProductProvider>(context).fetchAndSetProduct();
+        },
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          child: productData.item.isEmpty
+              ? const Center(
+                  child: Text(
+                    'There is no product yet',
+                    style: TextStyle(
+                      fontFamily: 'Raleway-Bold',
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const Divider(),
-                  ],
+                  ),
+                )
+              : ListView.builder(
+                  itemBuilder: (context, index) => Column(
+                    children: [
+                      UserProductsItem(
+                        id: productData.item[index].id,
+                        imageUrl: productData.item[index].imageUrl,
+                        title: productData.item[index].title,
+                        removeItem: productData.deleteProduct,
+                      ),
+                      const Divider(),
+                    ],
+                  ),
+                  itemCount: productData.item.length,
                 ),
-                itemCount: productData.item.length,
-              ),
+        ),
       ),
     );
   }

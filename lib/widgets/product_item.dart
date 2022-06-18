@@ -32,7 +32,7 @@ class ProductItem extends StatelessWidget {
                   size: 20,
                 ),
                 onPressed: () {
-                  product.toggleFavoriteButton();
+                  product.toggleFavoriteButton(context);
 
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
@@ -52,7 +52,7 @@ class ProductItem extends StatelessWidget {
                       duration: const Duration(seconds: 2),
                       action: SnackBarAction(
                         label: 'UNDO',
-                        onPressed: product.toggleFavoriteButton,
+                        onPressed: () => product.toggleFavoriteButton(context),
                         textColor: Colors.redAccent,
                       ),
                     ),
