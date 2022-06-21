@@ -5,7 +5,7 @@ class UserProductsItem extends StatelessWidget {
   final String title;
   final String imageUrl;
   final String id;
-  final Function(String) removeItem;
+  final Future<void> Function(String) removeItem;
   const UserProductsItem(
       {Key? key,
       required this.title,
@@ -15,6 +15,7 @@ class UserProductsItem extends StatelessWidget {
       : super(key: key);
 
   void _deleteItem(BuildContext context) {
+    final message = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
       builder: (_) {
@@ -35,9 +36,35 @@ class UserProductsItem extends StatelessWidget {
           content: const Text('Do you want to delete product ?'),
         );
       },
-    ).then((value) {
-      if (value) removeItem(id);
-    });
+    ).then(
+      (value) async {
+        if (value == null) {
+          return null;
+        }
+        if (value) {
+          try {
+            await removeItem(id);
+            message.showSnackBar(
+              const SnackBar(
+                content: Text('Successfully deleted'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          } catch (error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Deleting failed',
+                  style: TextStyle(color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+        }
+      },
+    );
   }
 
   @override

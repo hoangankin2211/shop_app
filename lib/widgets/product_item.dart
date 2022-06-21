@@ -4,14 +4,29 @@ import '../screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
 
-class ProductItem extends StatelessWidget {
+class ProductItem extends StatefulWidget {
   const ProductItem({Key? key}) : super(key: key);
+
+  @override
+  State<ProductItem> createState() => _ProductItemState();
+}
+
+class _ProductItemState extends State<ProductItem> {
+  final Map<bool, Widget> _contentSnackBar = {
+    true: Container(
+        height: 20,
+        width: 10,
+        alignment: Alignment.center,
+        child: const CircularProgressIndicator()),
+    false:
+        const Text('Add product to cart successful', textAlign: TextAlign.start)
+  };
 
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
-
+    var message = ScaffoldMessenger.of(context);
     return GestureDetector(
       onTap: () {
         Navigator.of(context)
@@ -71,15 +86,26 @@ class ProductItem extends StatelessWidget {
                 Icons.shopping_cart,
                 size: 20,
               ),
-              onPressed: () {
-                cart.addItem(product.id, product.price, product.title);
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text(
-                      'Add product to cart successful',
-                      textAlign: TextAlign.start,
+              onPressed: () async {
+                message.hideCurrentSnackBar();
+                try {
+                  message.showSnackBar(SnackBar(
+                    content: _contentSnackBar[true]!,
+                    duration: const Duration(seconds: 10),
+                    action: SnackBarAction(
+                      label: 'UNDO',
+                      onPressed: () => cart.removeOneItem(product.id),
+                      textColor: Colors.redAccent,
                     ),
+                    backgroundColor: Colors.black54,
+                  ));
+                  await cart.addItem(product.id, product.price, product.title);
+                } catch (error) {
+                  rethrow;
+                } finally {
+                  message.hideCurrentSnackBar();
+                  message.showSnackBar(SnackBar(
+                    content: _contentSnackBar[false]!,
                     duration: const Duration(seconds: 2),
                     action: SnackBarAction(
                       label: 'UNDO',
@@ -87,8 +113,8 @@ class ProductItem extends StatelessWidget {
                       textColor: Colors.redAccent,
                     ),
                     backgroundColor: Colors.black54,
-                  ),
-                );
+                  ));
+                }
               },
             ),
           ),

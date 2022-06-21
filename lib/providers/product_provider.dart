@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../models/http_exception.dart';
 
 class ProductProvider with ChangeNotifier {
   List<Product> _item = [];
@@ -78,25 +79,44 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  void updateProduct(String id, Product value) {
-    int index = _item.indexWhere((element) => element.id == value.id);
-    _item.removeAt(index);
-    _item.insert(
-      index,
-      Product(
-        id: id,
-        description: value.description,
-        imageUrl: value.imageUrl,
-        price: value.price,
-        title: value.title,
-        isFavorite: value.isFavorite,
-      ),
-    );
-    notifyListeners();
+  Future<void> updateProduct(String id, Product value) async {
+    final url =
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/poduct/$id.json';
+    try {
+      await http.patch(
+        Uri.parse(url),
+        body: json.encode({
+          'title': value.title,
+          'description': value.description,
+          'price': value.price,
+          'imageUrl': value.imageUrl,
+          'isFavorite': value.isFavorite,
+        }),
+      );
+      int index = _item.indexWhere((element) => element.id == value.id);
+      _item[index] = value;
+      notifyListeners();
+    } catch (error) {
+      rethrow;
+    }
   }
 
-  void deleteProduct(String id) {
-    _item.removeWhere((element) => element.id == id);
+  Future<void> deleteProduct(String id) async {
+    final url =
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/poduct/$id.json';
+    final existingProductIndex =
+        _item.indexWhere((element) => element.id == id);
+
+    Product existingProduct = _item[existingProductIndex];
+    _item.removeAt(existingProductIndex);
     notifyListeners();
+
+    final response = await http.delete(Uri.parse(url));
+    if (response.statusCode >= 400) {
+      _item.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      throw const HttpException(message: 'Error');
+    }
+    existingProduct.dispose();
   }
 }
