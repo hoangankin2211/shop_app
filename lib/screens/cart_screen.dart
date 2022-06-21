@@ -15,17 +15,25 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   bool _initState = true;
   bool _isLoading = false;
+  bool _isFinish = false;
   @override
   void didChangeDependencies() async {
     if (_initState) {
       setState(() {
         _isLoading = true;
       });
-      await Provider.of<Cart>(context, listen: false).fetchAndSetCart();
+      try {
+        await Provider.of<Cart>(context, listen: false).fetchAndSetCart();
 
-      setState(() {
-        _isLoading = false;
-      });
+        setState(() {
+          _isLoading = false;
+        });
+      } catch (error) {
+        setState(() {
+          _isLoading = false;
+        });
+        rethrow;
+      }
     }
     _initState = false;
     super.didChangeDependencies();
@@ -62,13 +70,42 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ),
                           TextButton(
-                            onPressed: () {
-                              addOrder.addOrder(cartData.item.values.toList(),
-                                  cartData.totalAmount);
-                              cartData.clear();
-                            },
-                            child: const Text('ORDER NOW'),
-                          )
+                              onPressed: () async {
+                                try {
+                                  setState(() {
+                                    _isFinish = true;
+                                  });
+                                  await addOrder.addOrder(
+                                      cartData.item.values.toList(),
+                                      cartData.totalAmount);
+                                  cartData.clear();
+                                  setState(() {
+                                    _isFinish = false;
+                                  });
+                                } catch (error) {
+                                  await showDialog(
+                                    context: context,
+                                    builder: (_) {
+                                      return AlertDialog(
+                                        actions: [
+                                          TextButton(
+                                            child: const Text('OK'),
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(),
+                                          )
+                                        ],
+                                        title: const Text('An error occurred'),
+                                        content: Text(error.toString()),
+                                      );
+                                    },
+                                  );
+                                  rethrow;
+                                }
+                              },
+                              child: _isFinish
+                                  ? const Center(
+                                      child: CircularProgressIndicator())
+                                  : const Text('ORDER NOW'))
                         ]),
                   ),
                 ),

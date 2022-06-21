@@ -28,6 +28,9 @@ class Cart with ChangeNotifier {
         'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/carts.json';
     try {
       final response = await http.get(Uri.parse(url));
+      if (json.decode(response.body) == null) {
+        return;
+      }
       final extractData = json.decode(response.body) as Map<String, dynamic>;
       Map<String, CartItem> loadedCart = {};
       extractData.forEach(
@@ -175,8 +178,16 @@ class Cart with ChangeNotifier {
     return ((total * 100).round()) / 100;
   }
 
-  void clear() {
+  Future<void> clear() async {
     _item.clear();
     notifyListeners();
+    final loadCart = _item;
+    String url =
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/carts.json';
+    final response = await http.delete(Uri.parse(url));
+    if (response.statusCode >= 400) {
+      _item = loadCart;
+      notifyListeners();
+    }
   }
 }
