@@ -43,33 +43,52 @@ class _ProductItemState extends State<ProductItem> {
                           : Icons.favorite_outline,
                       size: 15,
                     ),
-                    onPressed: () {
-                      product.toggleFavoriteButton(context);
+                    onPressed: () async {
+                      try {
+                        await product.toggleFavoriteButton(context);
 
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-                      String content = '';
-                      if (product.isFavorite) {
-                        content = 'Added to the favorite list';
-                      } else {
-                        content = 'Deleted from the favorite list';
+                        String content = '';
+                        if (product.isFavorite) {
+                          content = 'Added to the favorite list';
+                        } else {
+                          content = 'Deleted from the favorite list';
+                        }
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              content,
+                              textAlign: TextAlign.start,
+                            ),
+                            duration: const Duration(seconds: 2),
+                            action: SnackBarAction(
+                              label: 'UNDO',
+                              onPressed: () =>
+                                  product.toggleFavoriteButton(context),
+                              textColor: Colors.redAccent,
+                            ),
+                          ),
+                        );
+                      } catch (error) {
+                        showDialog(
+                          context: (context),
+                          builder: (_) {
+                            return AlertDialog(
+                              title: const Text('Error'),
+                              content: Text(error.toString()),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('OK'),
+                                )
+                              ],
+                            );
+                          },
+                        );
+                        rethrow;
                       }
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            content,
-                            textAlign: TextAlign.start,
-                          ),
-                          duration: const Duration(seconds: 2),
-                          action: SnackBarAction(
-                            label: 'UNDO',
-                            onPressed: () =>
-                                product.toggleFavoriteButton(context),
-                            textColor: Colors.redAccent,
-                          ),
-                        ),
-                      );
                     },
                   ),
                 ),
@@ -112,27 +131,28 @@ class _ProductItemState extends State<ProductItem> {
                                   'Are you sure to add this product to cart ?'),
                             );
                           }).then((isAccept) async {
-                        await cart.addItem(
-                            product.id, product.price, product.title);
-                        widget.setLoading(false);
-                        message.clearSnackBars();
-                        message.showSnackBar(SnackBar(
-                          content: const Text(
-                            'Add product to cart successful',
-                            textAlign: TextAlign.start,
-                            style: TextStyle(color: Colors.lightGreen),
-                          ),
-                          duration: const Duration(seconds: 2),
-                          action: SnackBarAction(
-                            label: 'UNDO',
-                            onPressed: () => cart.removeOneItem(product.id),
-                            textColor: Colors.white54,
-                          ),
-                          backgroundColor: Colors.black54,
-                        ));
+                        if (isAccept) {
+                          widget.setLoading(true);
+                          await cart.addItem(
+                              product.id, product.price, product.title);
+                          widget.setLoading(false);
+                          message.clearSnackBars();
+                          message.showSnackBar(SnackBar(
+                            content: const Text(
+                              'Add product to cart successful',
+                              textAlign: TextAlign.start,
+                              style: TextStyle(color: Colors.lightGreen),
+                            ),
+                            duration: const Duration(seconds: 2),
+                            action: SnackBarAction(
+                              label: 'UNDO',
+                              onPressed: () => cart.removeOneItem(product.id),
+                              textColor: Colors.white54,
+                            ),
+                            backgroundColor: Colors.black54,
+                          ));
+                        }
                       });
-
-                      widget.setLoading(true);
                     } catch (error) {
                       rethrow;
                     }

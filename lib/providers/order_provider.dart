@@ -24,7 +24,7 @@ class Order with ChangeNotifier {
     return [..._orders];
   }
 
-  Future<void> fetchAndLoadData() async {
+  Future<void> fetchAndLoadOrder() async {
     String url =
         'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json';
     try {
@@ -70,17 +70,15 @@ class Order with ChangeNotifier {
           {
             'amount': total,
             'datetime': time.toString(),
-            'product': cartProduct.map(
-              (e) {
-                return {
-                  'id': e.id,
-                  'title': e.title,
-                  'price': e.price,
-                  'quantity': e.quantity,
-                  'idCart': e.idCart
-                };
-              },
-            ).toList(),
+            'product': cartProduct
+                .map((e) => {
+                      'id': e.id,
+                      'title': e.title,
+                      'price': e.price,
+                      'quantity': e.quantity,
+                      'idCart': e.idCart
+                    })
+                .toList(),
           },
         ),
       );
