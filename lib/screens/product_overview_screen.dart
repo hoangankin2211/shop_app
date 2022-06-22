@@ -28,7 +28,9 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
       setState(() {
         _isLoading = true;
       });
-      await Provider.of<ProductProvider>(context).fetchAndSetProduct();
+      await Provider.of<ProductProvider>(context, listen: false)
+          .fetchAndSetProduct();
+      await Provider.of<Cart>(context, listen: false).fetchAndSetCart();
       setState(() {
         _isLoading = false;
       });
@@ -82,7 +84,10 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ProductsGrid(showFavorite: _showFavorite),
+          : Container(
+              child: ProductsGrid(showFavorite: _showFavorite),
+              margin: const EdgeInsets.all(5),
+            ),
       drawer: const DrawerScreen(),
     );
   }

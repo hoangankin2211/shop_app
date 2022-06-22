@@ -124,29 +124,33 @@ class Cart with ChangeNotifier {
     String id = _item[productId]!.idCart;
     String url =
         'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/carts/$id.json';
-    if (_item[productId]!.quantity > 1) {
-      _item.update(
-        productId,
-        (value) => CartItem(
-          idCart: value.idCart,
-          id: value.id,
-          price: value.price,
-          quantity: value.quantity - 1,
-          title: value.title,
-        ),
-      );
-      await http.patch(
-        Uri.parse(url),
-        body: json.encode({
-          'id': _item[productId]!.id,
-          'title': _item[productId]!.title,
-          'price': _item[productId]!.price,
-          'quantity': _item[productId]!.quantity,
-        }),
-      );
-    } else {
-      _item.removeWhere((key, value) => key == productId);
-      await http.delete(Uri.parse(url));
+    try {
+      if (_item[productId]!.quantity > 1) {
+        _item.update(
+          productId,
+          (value) => CartItem(
+            idCart: value.idCart,
+            id: value.id,
+            price: value.price,
+            quantity: value.quantity - 1,
+            title: value.title,
+          ),
+        );
+        await http.patch(
+          Uri.parse(url),
+          body: json.encode({
+            'id': _item[productId]!.id,
+            'title': _item[productId]!.title,
+            'price': _item[productId]!.price,
+            'quantity': _item[productId]!.quantity,
+          }),
+        );
+      } else {
+        _item.removeWhere((key, value) => key == productId);
+        await http.delete(Uri.parse(url));
+      }
+    } catch (e) {
+      rethrow;
     }
 
     notifyListeners();
@@ -184,10 +188,14 @@ class Cart with ChangeNotifier {
     final loadCart = _item;
     String url =
         'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/carts.json';
-    final response = await http.delete(Uri.parse(url));
-    if (response.statusCode >= 400) {
-      _item = loadCart;
-      notifyListeners();
+    try {
+      final response = await http.delete(Uri.parse(url));
+      if (response.statusCode >= 400) {
+        _item = loadCart;
+        notifyListeners();
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 }

@@ -78,7 +78,7 @@ class _CartScreenState extends State<CartScreen> {
                                   await addOrder.addOrder(
                                       cartData.item.values.toList(),
                                       cartData.totalAmount);
-                                  cartData.clear();
+                                  await cartData.clear();
                                   setState(() {
                                     _isFinish = false;
                                   });

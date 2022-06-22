@@ -38,7 +38,7 @@ class DrawerScreen extends StatelessWidget {
             title: const Align(
                 alignment: Alignment.topLeft, child: Icon(Icons.edit)),
             trailing: const Text(
-              'Manager Product',
+              'Manager',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
