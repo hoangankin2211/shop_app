@@ -6,11 +6,13 @@ import './screens/product_overview_screen.dart';
 import './screens/cart_screen.dart';
 import './screens/orders_screen.dart';
 import './screens/user_products_screen.dart';
+import './screens/auth_screen.dart';
 
 import 'package:provider/provider.dart';
 import './providers/cart_provider.dart';
 import './providers/product_provider.dart';
 import './providers/order_provider.dart';
+import './providers/auth.dart';
 
 void main() {
   runApp(const MyApp());
@@ -42,14 +44,18 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => Order(),
-        )
+        ),
+        ChangeNotifierProvider(
+          create: (context) => Auth(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: lightTheme,
         title: 'My Shop',
-        home: const MyHomePage(),
+        home: const AuthScreen(),
         routes: {
+          AuthScreen.routeName: (context) => const AuthScreen(),
           ProductDetailScreen.routeName: (context) =>
               const ProductDetailScreen(),
           CartScreen.routeName: (context) => const CartScreen(),
