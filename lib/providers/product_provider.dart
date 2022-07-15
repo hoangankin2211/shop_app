@@ -7,8 +7,12 @@ import 'package:http/http.dart' as http;
 import '../models/http_exception.dart';
 
 class ProductProvider with ChangeNotifier {
-  List<Product> _item = [];
-  List<Product> get item {
+  final String _authToken;
+  List<Product> _item;
+
+  ProductProvider(this._item, this._authToken);
+
+  List<Product> get items {
     return [..._item];
   }
 
@@ -27,8 +31,8 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProduct() async {
-    const url =
-        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/poduct.json';
+    final url =
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/poduct.json?auth=$_authToken';
     try {
       final response = await http.get(Uri.parse(url));
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -51,8 +55,8 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<void> addProduct(Product value) async {
-    const String url =
-        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/poduct.json';
+    final url =
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/poduct.json?auth=$_authToken';
     try {
       final response = await http.post(Uri.parse(url),
           body: json.encode({
@@ -81,7 +85,7 @@ class ProductProvider with ChangeNotifier {
 
   Future<void> updateProduct(String id, Product value) async {
     final url =
-        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/poduct/$id.json';
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/poduct/$id.json?auth=$_authToken';
     try {
       await http.patch(
         Uri.parse(url),
@@ -103,7 +107,7 @@ class ProductProvider with ChangeNotifier {
 
   Future<void> deleteProduct(String id) async {
     final url =
-        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/poduct/$id.json';
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/poduct/$id.json?auth=$_authToken';
     final existingProductIndex =
         _item.indexWhere((element) => element.id == id);
 

@@ -1,13 +1,25 @@
 import 'package:flutter/widgets.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../models/http_exception.dart';
 
 class Auth with ChangeNotifier {
   String? _token;
-  DateTime? _expirDate;
+  DateTime? _expiresDate;
   String? _userID;
 
-  // Auth(this._token, this._expirDate, this._userID);
+  bool get isAuth {
+    return token != null;
+  }
+
+  String? get token {
+    if (_expiresDate != null &&
+        _expiresDate!.isAfter(DateTime.now()) &&
+        _token != null) {
+      return _token;
+    }
+    return null;
+  }
 
   Future<void> signIn(String email, String password) async {
     const _url =
@@ -22,9 +34,16 @@ class Auth with ChangeNotifier {
         }),
       );
       final dataResponse = json.decode(response.body);
-      print(dataResponse);
+      if (dataResponse['error'] != null) {
+        throw HttpException(message: dataResponse['error']['message']);
+      }
+      _token = dataResponse['idToken'];
+      _userID = dataResponse['localId'];
+      _expiresDate = DateTime.now().add(
+        Duration(seconds: int.parse(dataResponse['expiresIn'])),
+      );
+      notifyListeners();
     } catch (e) {
-      // TODO
       rethrow;
     }
   }
@@ -42,9 +61,10 @@ class Auth with ChangeNotifier {
         }),
       );
       final dataResponse = json.decode(response.body);
-      print(dataResponse);
+      if (dataResponse['error'] != null) {
+        throw HttpException(message: dataResponse['error']['message']);
+      }
     } catch (e) {
-      // TODO
       rethrow;
     }
   }

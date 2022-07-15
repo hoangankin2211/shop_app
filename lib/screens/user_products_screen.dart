@@ -45,7 +45,7 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
         },
         child: Container(
           padding: const EdgeInsets.all(8),
-          child: productData.item.isEmpty
+          child: productData.items.isEmpty
               ? const Center(
                   child: Text(
                     'There is no product yet',
@@ -60,15 +60,15 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                   itemBuilder: (context, index) => Column(
                     children: [
                       UserProductsItem(
-                        id: productData.item[index].id,
-                        imageUrl: productData.item[index].imageUrl,
-                        title: productData.item[index].title,
+                        id: productData.items[index].id,
+                        imageUrl: productData.items[index].imageUrl,
+                        title: productData.items[index].title,
                         removeItem: productData.deleteProduct,
                       ),
                       const Divider(),
                     ],
                   ),
-                  itemCount: productData.item.length,
+                  itemCount: productData.items.length,
                 ),
         ),
       ),

@@ -24,7 +24,7 @@ class _ProductsGridState extends State<ProductsGrid> {
   Widget build(BuildContext context) {
     final productData = Provider.of<ProductProvider>(context);
     final listProduct =
-        widget.showFavorite ? productData.favoriteItem : productData.item;
+        widget.showFavorite ? productData.favoriteItem : productData.items;
     return listProduct.isEmpty
         ? const Center(
             child: Text(

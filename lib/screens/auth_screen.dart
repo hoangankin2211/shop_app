@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:shop_app/models/http_exception.dart';
 
 import '../providers/auth.dart';
+import './product_overview_screen.dart';
 import 'package:provider/provider.dart';
 
 enum AuthMode { Signup, Login }
@@ -102,7 +104,22 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
-  void _submit() {
+  void _showAlertDialog(String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Warning'),
+        content: Text(errorMessage),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'))
+        ],
+      ),
+    );
+  }
+
+  void _submit() async {
     if (!_formKey.currentState!.validate()) {
       // Invalid!
       return;
@@ -111,13 +128,30 @@ class _AuthCardState extends State<AuthCard> {
     setState(() {
       _isLoading = true;
     });
-    if (_authMode == AuthMode.Login) {
-      Provider.of<Auth>(context, listen: false)
-          .signIn(_authData['email']!, _authData['password']!);
-    } else {
-      // Sign user up
-      Provider.of<Auth>(context, listen: false)
-          .signUp(_authData['email']!, _authData['password']!);
+    try {
+      if (_authMode == AuthMode.Login) {
+        await Provider.of<Auth>(context, listen: false)
+            .signIn(_authData['email']!, _authData['password']!);
+      } else {
+        await Provider.of<Auth>(context, listen: false)
+            .signUp(_authData['email']!, _authData['password']!);
+      }
+    } on HttpException catch (e) {
+      String errorMessage = 'Authentication failed';
+      if (e.message.contains('EMAIL_NOT_FOUND')) {
+        errorMessage = 'Can\'t find corresponding email. Please try again !';
+      } else if (e.message.contains('INVALID_PASSWORD')) {
+        errorMessage = 'Invalid password. Please try again !';
+      } else if (e.message.contains('USER_DISABLED')) {
+        errorMessage =
+            'The user account have been disabled by an administrator';
+      } else if (e.message.contains('WEAK_PASSWORD')) {
+        errorMessage = 'This password is too weak';
+      }
+      _showAlertDialog(errorMessage);
+    } catch (e) {
+      const errorMessage = 'Count not authentication you. Please try again !';
+      _showAlertDialog(errorMessage);
     }
     setState(() {
       _isLoading = false;
