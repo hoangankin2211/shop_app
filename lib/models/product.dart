@@ -23,18 +23,19 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleFavoriteButton(BuildContext context) async {
+  Future<void> toggleFavoriteButton(
+      BuildContext context, String authToken, String userId) async {
     bool oldFavoriteValue = isFavorite;
     setFavoriteValue(!isFavorite);
 
     final url =
-        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/poduct/$id.json';
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/UserData/$userId/favoriteProduct/$id.json?auth=$authToken';
     try {
-      final response = await http.patch(
+      final response = await http.put(
         Uri.parse(url),
-        body: json.encode({
-          'isFavorite': isFavorite,
-        }),
+        body: json.encode(
+          isFavorite,
+        ),
       );
       if (response.statusCode >= 400) {
         setFavoriteValue(oldFavoriteValue);

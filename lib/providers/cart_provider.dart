@@ -18,14 +18,18 @@ class CartItem {
 }
 
 class Cart with ChangeNotifier {
-  Map<String, CartItem> _item = {};
+  final String _authToken;
+  final String _userID;
+  Map<String, CartItem> _item;
   Map<String, CartItem> get item {
     return {..._item};
   }
 
+  Cart(this._authToken, this._item, this._userID);
+
   Future<void> fetchAndSetCart() async {
-    const String url =
-        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/carts.json';
+    final String url =
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/UserData/$_userID/carts.json?auth=$_authToken';
     try {
       final response = await http.get(Uri.parse(url));
       if (json.decode(response.body) == null) {
@@ -64,9 +68,8 @@ class Cart with ChangeNotifier {
 
   Future<void> _updateItem(String productId, CartItem updatedItem) async {
     String idCart = updatedItem.idCart;
-    print(idCart);
     String url =
-        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/carts/$idCart.json';
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/UserData/$_userID/carts/$idCart.json?auth=$_authToken';
     try {
       await http.patch(
         Uri.parse(url),
@@ -95,7 +98,7 @@ class Cart with ChangeNotifier {
 
   Future<void> _addNewCart(String productId, double price, String title) async {
     String url =
-        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/carts.json';
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/UserData/$_userID/carts.json?auth=$_authToken';
     try {
       final response = await http.post(Uri.parse(url),
           body: json.encode({
@@ -123,7 +126,7 @@ class Cart with ChangeNotifier {
   Future<void> removeOneItem(String productId) async {
     String id = _item[productId]!.idCart;
     String url =
-        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/carts/$id.json';
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/UserData/$_userID/carts/$id.json?auth=$_authToken';
     try {
       if (_item[productId]!.quantity > 1) {
         _item.update(
@@ -161,7 +164,7 @@ class Cart with ChangeNotifier {
     _item.removeWhere((key, value) => key == productId);
     notifyListeners();
     String url =
-        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/carts/${tempCart.idCart}.json';
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/UserData/$_userID/carts/${tempCart.idCart}.json?auth=$_authToken';
     final response = await http.delete(Uri.parse(url));
     if (response.statusCode >= 400) {
       _item.addAll({productId: tempCart});
@@ -187,7 +190,7 @@ class Cart with ChangeNotifier {
     notifyListeners();
     final loadCart = _item;
     String url =
-        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/carts.json';
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/UserData/$_userID/carts.json?auth=$_authToken';
     try {
       final response = await http.delete(Uri.parse(url));
       if (response.statusCode >= 400) {

@@ -3,6 +3,7 @@ import '../models/product.dart';
 import '../screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
+import '../providers/auth.dart';
 
 class ProductItem extends StatefulWidget {
   final Function(bool) setLoading;
@@ -18,6 +19,8 @@ class _ProductItemState extends State<ProductItem> {
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
     var message = ScaffoldMessenger.of(context);
+    String authToken = Provider.of<Auth>(context, listen: false).token ?? '';
+    String userId = Provider.of<Auth>(context, listen: false).userID ?? '';
     return GestureDetector(
       onTap: () {
         Navigator.of(context)
@@ -45,7 +48,8 @@ class _ProductItemState extends State<ProductItem> {
                     ),
                     onPressed: () async {
                       try {
-                        await product.toggleFavoriteButton(context);
+                        await product.toggleFavoriteButton(
+                            context, authToken, userId);
 
                         ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
@@ -65,8 +69,8 @@ class _ProductItemState extends State<ProductItem> {
                             duration: const Duration(seconds: 2),
                             action: SnackBarAction(
                               label: 'UNDO',
-                              onPressed: () =>
-                                  product.toggleFavoriteButton(context),
+                              onPressed: () => product.toggleFavoriteButton(
+                                  context, authToken, userId),
                               textColor: Colors.redAccent,
                             ),
                           ),

@@ -8,9 +8,10 @@ import '../models/http_exception.dart';
 
 class ProductProvider with ChangeNotifier {
   final String _authToken;
+  final String _userId;
   List<Product> _item;
 
-  ProductProvider(this._item, this._authToken);
+  ProductProvider(this._item, this._authToken, this._userId);
 
   List<Product> get items {
     return [..._item];
@@ -33,9 +34,16 @@ class ProductProvider with ChangeNotifier {
   Future<void> fetchAndSetProduct() async {
     final url =
         'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/poduct.json?auth=$_authToken';
+    final urlFavoriteData =
+        'https://shop-app-database-23004-default-rtdb.asia-southeast1.firebasedatabase.app/UserData/$_userId/favoriteProduct.json?auth=$_authToken';
     try {
       final response = await http.get(Uri.parse(url));
+      final responseFavorite = await http.get(Uri.parse(urlFavoriteData));
+
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final favoriteData = json.decode(responseFavorite.body) == null
+          ? null
+          : json.decode(responseFavorite.body) as Map<String, dynamic>;
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodID, product) {
         loadedProducts.add(Product(
@@ -44,7 +52,8 @@ class ProductProvider with ChangeNotifier {
           imageUrl: product['imageUrl'],
           price: product['price'],
           title: product['title'],
-          isFavorite: product['isFavorite'],
+          isFavorite:
+              favoriteData == null ? false : favoriteData[prodID] ?? false,
         ));
       });
       _item = loadedProducts;

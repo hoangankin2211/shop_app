@@ -30,7 +30,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
       });
       await Provider.of<ProductProvider>(context, listen: false)
           .fetchAndSetProduct();
-      // await Provider.of<Cart>(context, listen: false).fetchAndSetCart();
+      await Provider.of<Cart>(context, listen: false).fetchAndSetCart();
       setState(() {
         _isLoading = false;
       });

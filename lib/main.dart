@@ -40,37 +40,45 @@ class MyApp extends StatelessWidget {
           create: (context) => Auth(),
         ),
         ChangeNotifierProxyProvider<Auth, ProductProvider>(
-          create: (_) => ProductProvider([], ''),
-          update: (context, auth, previousProduct) =>
-              ProductProvider(previousProduct!.items, auth.token!),
+          create: (_) => ProductProvider([], '', ''),
+          update: (context, auth, previousProduct) => ProductProvider(
+              previousProduct == null ? [] : previousProduct.items,
+              auth.token ?? '',
+              auth.userID ?? ''),
         ),
-        ChangeNotifierProvider(
-          create: (context) => Cart(),
+        ChangeNotifierProxyProvider<Auth, Cart>(
+          create: (context) => Cart('', {}, ''),
+          update: (context, auth, previousCart) =>
+              Cart(auth.token ?? '', previousCart!.item, auth.userID ?? ''),
         ),
-        ChangeNotifierProvider(
-          create: (context) => Order(),
-        ),
+        ChangeNotifierProxyProvider<Auth, Order>(
+            create: (context) => Order([], '', ''),
+            update: (context, auth, previousOrder) => Order(
+                previousOrder!.orders, auth.token ?? '', auth.userID ?? '')),
       ],
-      child: Consumer<Auth>(builder: (context, auth, _) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: lightTheme,
-          title: 'My Shop',
-          home:
-              auth.isAuth ? const ProductOverviewScreen() : const AuthScreen(),
-          routes: {
-            AuthScreen.routeName: (context) => const AuthScreen(),
-            ProductDetailScreen.routeName: (context) =>
-                const ProductDetailScreen(),
-            CartScreen.routeName: (context) => const CartScreen(),
-            ProductOverviewScreen.routeName: (context) =>
-                const ProductOverviewScreen(),
-            OrderScreen.routeName: (context) => const OrderScreen(),
-            UserProductsScreen.routeName: (context) =>
-                const UserProductsScreen(),
-          },
-        );
-      }),
+      child: Consumer<Auth>(
+        builder: (context, auth, _) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: lightTheme,
+            title: 'My Shop',
+            home: auth.isAuth
+                ? const ProductOverviewScreen()
+                : const AuthScreen(),
+            routes: {
+              AuthScreen.routeName: (context) => const AuthScreen(),
+              ProductDetailScreen.routeName: (context) =>
+                  const ProductDetailScreen(),
+              CartScreen.routeName: (context) => const CartScreen(),
+              ProductOverviewScreen.routeName: (context) =>
+                  const ProductOverviewScreen(),
+              OrderScreen.routeName: (context) => const OrderScreen(),
+              UserProductsScreen.routeName: (context) =>
+                  const UserProductsScreen(),
+            },
+          );
+        },
+      ),
     );
   }
 }

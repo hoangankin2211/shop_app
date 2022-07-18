@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/screens/product_overview_screen.dart';
+import 'package:provider/provider.dart';
+
 import './product_overview_screen.dart';
 import './orders_screen.dart';
 import './user_products_screen.dart';
+import '../providers/auth.dart';
 
 class DrawerScreen extends StatelessWidget {
   const DrawerScreen({Key? key}) : super(key: key);
@@ -39,6 +41,22 @@ class DrawerScreen extends StatelessWidget {
                 alignment: Alignment.topLeft, child: Icon(Icons.edit)),
             trailing: const Text(
               'Manager',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const Divider(),
+          ListTile(
+            onTap: () {
+              Navigator.of(context).pop();
+              Provider.of<Auth>(context, listen: false).logOut();
+            },
+            title: const Align(
+                alignment: Alignment.topLeft, child: Icon(Icons.logout)),
+            trailing: const Text(
+              'Logout',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
