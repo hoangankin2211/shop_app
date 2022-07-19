@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/widgets.dart';
 import 'dart:convert';
@@ -13,7 +13,11 @@ class Auth with ChangeNotifier {
   Timer? _authTime;
 
   bool get isAuth {
-    return token != null;
+    if (token == null) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   String? get userID {
@@ -22,8 +26,8 @@ class Auth with ChangeNotifier {
 
   String? get token {
     if (_expiresDate != null &&
-        _expiresDate!.isAfter(DateTime.now()) &&
-        _token != null) {
+        _token != null &&
+        _expiresDate!.isAfter(DateTime.now())) {
       return _token;
     }
     return null;
@@ -52,6 +56,14 @@ class Auth with ChangeNotifier {
       );
       _autoLogout();
       notifyListeners();
+
+      final pref = await SharedPreferences.getInstance();
+      final userDataLogin = json.encode({
+        'token': _token,
+        'expiresDate': _expiresDate!.toIso8601String(),
+        'userID': _userID,
+      });
+      pref.setString('userDataLogin', userDataLogin);
     } catch (e) {
       rethrow;
     }
@@ -78,12 +90,24 @@ class Auth with ChangeNotifier {
     }
   }
 
-  void logOut() {
+  Future<void> logOut() async {
+    final pref = await SharedPreferences.getInstance();
+
+    pref.clear();
+
     _expiresDate = null;
     _token = null;
     _userID = null;
+
     _authTime?.cancel();
+    _authTime = null;
+
     notifyListeners();
+
+    // if (token == null) {
+    //   print('Token is null');
+    //   print(isAuth);
+    // }
   }
 
   void _autoLogout() {
@@ -92,7 +116,29 @@ class Auth with ChangeNotifier {
     _authTime = Timer(Duration(seconds: timeToExpiry), logOut);
   }
 
-  bool isEmpty(String? a) {
-    return a?.length == 1;
+  Future<bool> tryLoginAgain() async {
+    final pref = await SharedPreferences.getInstance();
+
+    if (!pref.containsKey('userDataLogin')) {
+      return false;
+    }
+
+    final userData = pref.getString('userDataLogin');
+
+    final extractedUserData = json.decode(userData!) as Map<String, dynamic>;
+
+    final extractedExpiresDate =
+        DateTime.parse(extractedUserData['expiresDate'] as String);
+    if (extractedExpiresDate.isBefore(DateTime.now())) {
+      return false;
+    }
+
+    _token = extractedUserData['token'] as String;
+    _expiresDate = extractedExpiresDate;
+    _userID = extractedUserData['userID'] as String;
+
+    notifyListeners();
+    _autoLogout();
+    return true;
   }
 }

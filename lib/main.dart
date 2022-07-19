@@ -32,6 +32,33 @@ final darkTheme = ThemeData(
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  Widget checkHome(Auth auth) {
+    if (auth.isAuth) {
+      return const ProductOverviewScreen();
+    }
+    return FutureBuilder(
+      builder: (context, snapshotAuthState) {
+        if (snapshotAuthState.connectionState == ConnectionState.done) {
+          print('snapshotAuthState.hasData: ${snapshotAuthState.hasData}');
+          if (snapshotAuthState.hasData) {
+            print(
+                'snapshotAuthState.data: ' + snapshotAuthState.data.toString());
+            if (snapshotAuthState.data as bool) {
+              return const ProductOverviewScreen();
+            } else {
+              return const AuthScreen();
+            }
+          } else {
+            return const AuthScreen();
+          }
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
+      future: auth.tryLoginAgain(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -62,9 +89,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: lightTheme,
             title: 'My Shop',
-            home: auth.isAuth
-                ? const ProductOverviewScreen()
-                : const AuthScreen(),
+            home: checkHome(auth),
             routes: {
               AuthScreen.routeName: (context) => const AuthScreen(),
               ProductDetailScreen.routeName: (context) =>
@@ -79,17 +104,6 @@ class MyApp extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: ProductOverviewScreen(),
     );
   }
 }

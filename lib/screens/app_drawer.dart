@@ -15,13 +15,13 @@ class DrawerScreen extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.7,
       child: Column(
         children: [
-          AppBar(title: const Text('MENU')),
+          AppBar(title: const Text('Menu')),
           ListTile(
             onTap: () => Navigator.of(context)
                 .pushReplacementNamed(ProductOverviewScreen.routeName),
             title: const Align(
                 alignment: Alignment.topLeft, child: Icon(Icons.shop)),
-            trailing: const Text('SHOP',
+            trailing: const Text('Shop',
                 style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           const Divider(),
@@ -30,7 +30,7 @@ class DrawerScreen extends StatelessWidget {
                 .pushReplacementNamed(OrderScreen.routeName),
             title: const Align(
                 alignment: Alignment.topLeft, child: Icon(Icons.payment)),
-            trailing: const Text('ORDER',
+            trailing: const Text('Order',
                 style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           const Divider(),
@@ -49,9 +49,9 @@ class DrawerScreen extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            onTap: () {
-              Navigator.of(context).pop();
-              Provider.of<Auth>(context, listen: false).logOut();
+            onTap: () async {
+              Navigator.of(context).pushReplacementNamed('/');
+              await Provider.of<Auth>(context, listen: false).logOut();
             },
             title: const Align(
                 alignment: Alignment.topLeft, child: Icon(Icons.logout)),
