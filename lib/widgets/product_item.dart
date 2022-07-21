@@ -29,9 +29,14 @@ class _ProductItemState extends State<ProductItem> {
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         child: GridTile(
-          child: Image.network(
-            product.imageUrl,
-            fit: BoxFit.fill,
+          child: Hero(
+            tag: product.id,
+            child: FadeInImage(
+              placeholder: const AssetImage(
+                  'assets/images/product-image-placeholder.jpg'),
+              image: NetworkImage(product.imageUrl),
+              fit: BoxFit.cover,
+            ),
           ),
           footer: SizedBox(
             height: 35,

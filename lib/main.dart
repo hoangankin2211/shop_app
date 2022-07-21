@@ -7,6 +7,7 @@ import './screens/cart_screen.dart';
 import './screens/orders_screen.dart';
 import './screens/user_products_screen.dart';
 import './screens/auth_screen.dart';
+import './helpers/custom_route.dart';
 
 import 'package:provider/provider.dart';
 import './providers/cart_provider.dart';
@@ -39,10 +40,7 @@ class MyApp extends StatelessWidget {
     return FutureBuilder(
       builder: (context, snapshotAuthState) {
         if (snapshotAuthState.connectionState == ConnectionState.done) {
-          print('snapshotAuthState.hasData: ${snapshotAuthState.hasData}');
           if (snapshotAuthState.hasData) {
-            print(
-                'snapshotAuthState.data: ' + snapshotAuthState.data.toString());
             if (snapshotAuthState.data as bool) {
               return const ProductOverviewScreen();
             } else {
@@ -87,7 +85,19 @@ class MyApp extends StatelessWidget {
         builder: (context, auth, _) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            theme: lightTheme,
+            theme: ThemeData(
+              primaryColor: Colors.amber,
+              appBarTheme: const AppBarTheme(
+                color: Colors.orange,
+              ),
+              pageTransitionsTheme: PageTransitionsTheme(
+                builders: {
+                  TargetPlatform.android: CustomPageTransitionBuilder(),
+                  TargetPlatform.iOS: CustomPageTransitionBuilder(),
+                  TargetPlatform.windows: CustomPageTransitionBuilder(),
+                },
+              ),
+            ),
             title: 'My Shop',
             home: checkHome(auth),
             routes: {

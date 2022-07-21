@@ -1,5 +1,4 @@
-import 'dart:math';
-
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../providers/order_provider.dart' as providerOrder;
@@ -17,30 +16,43 @@ class _OrderItemState extends State<OrderItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(5),
-      elevation: 5,
-      child: Column(
-        children: [
-          ListTile(
-            title: Text(widget.infoOrder.amount.toString()),
-            subtitle: Text(DateFormat('dd MM yyyy hh:mm')
-                .format(widget.infoOrder.datetime)),
-            trailing: IconButton(
-              onPressed: () {
-                setState(() {
-                  _expand = !_expand;
-                });
-              },
-              icon: _expand
-                  ? const Icon(Icons.expand_less)
-                  : const Icon(Icons.expand_more),
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _expand = !_expand;
+        });
+      },
+      child: Card(
+        margin: const EdgeInsets.all(5),
+        elevation: 10,
+        child: Column(
+          children: [
+            ListTile(
+              title: Text(
+                '\$' + widget.infoOrder.amount.toString(),
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+              subtitle: Text(
+                DateFormat('dd-MM-yyyy hh:mm')
+                    .format(widget.infoOrder.datetime),
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+              trailing: IconButton(
+                onPressed: () {
+                  setState(() {
+                    _expand = !_expand;
+                  });
+                },
+                icon: _expand
+                    ? const Icon(Icons.expand_less)
+                    : const Icon(Icons.expand_more),
+              ),
             ),
-          ),
-          if (_expand)
-            Container(
-              height: widget.infoOrder.products.length * 5 + 100,
-              padding: const EdgeInsets.all(20),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeIn,
+              height: _expand ? widget.infoOrder.products.length * 20 + 10 : 0,
+              padding: const EdgeInsets.only(right: 30, left: 30),
               child: ListView(
                 children: widget.infoOrder.products
                     .map(
@@ -51,14 +63,18 @@ class _OrderItemState extends State<OrderItem> {
                             e.title,
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          Text(e.price.toString() + 'x' + e.quantity.toString())
+                          Text(
+                            e.price.toString() + 'x' + e.quantity.toString(),
+                            style: const TextStyle(fontWeight: FontWeight.w500),
+                          )
                         ],
                       ),
                     )
                     .toList(),
               ),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }
